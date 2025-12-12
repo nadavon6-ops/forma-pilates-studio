@@ -6,6 +6,9 @@ import ServicePageContent from './ServicePageContent'
 
 const WORDPRESS_API = 'https://wordpress-1097675-6067353.cloudwaysapps.com/wp-json/wp/v2'
 
+// Force dynamic rendering to fetch fresh data from WordPress
+export const dynamic = 'force-dynamic'
+
 // Map Hebrew slugs to WordPress page IDs
 const slugToPageId: Record<string, number> = {
   'מה-זה-פילאטיס': 7,
@@ -28,8 +31,11 @@ interface WPPage {
 
 async function getPageById(id: number): Promise<WPPage | null> {
   try {
+    // Disable SSL verification for WordPress API (cert mismatch issue)
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
     const res = await fetch(`${WORDPRESS_API}/pages/${id}`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     })
     if (!res.ok) return null
     return res.json()
@@ -71,14 +77,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-// Enable dynamic rendering for Hebrew slugs
+// Allow any slug (dynamicParams)
 export const dynamicParams = true
-
-export async function generateStaticParams() {
-  return Object.keys(slugToPageId).map((slug) => ({
-    slug: slug,
-  }))
-}
 
 export default async function ServicePage({ params }: { params: { slug: string } }) {
   const decodedSlug = decodeURIComponent(params.slug)
