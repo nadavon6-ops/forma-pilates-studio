@@ -33,7 +33,8 @@ async function getPageById(id: number): Promise<WPPage | null> {
     })
     if (!res.ok) return null
     return res.json()
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch page:', error)
     return null
   }
 }

@@ -70,7 +70,7 @@ export async function getPosts(perPage: number = 10): Promise<WPPost[]> {
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return []
-    return res.json()
+    return res.json() as Promise<WPPost[]>
   } catch (error) {
     console.error('Failed to fetch posts:', error)
     return []
@@ -85,7 +85,7 @@ export async function getPostBySlug(slug: string): Promise<WPPost | null> {
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return null
-    const posts = await res.json()
+    const posts = await res.json() as WPPost[]
     return posts[0] || null
   } catch (error) {
     console.error('Failed to fetch post:', error)
@@ -101,7 +101,7 @@ export async function getPages(): Promise<WPPage[]> {
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return []
-    return res.json()
+    return res.json() as Promise<WPPage[]>
   } catch (error) {
     console.error('Failed to fetch pages:', error)
     return []
@@ -116,7 +116,7 @@ export async function getPageBySlug(slug: string): Promise<WPPage | null> {
       { next: { revalidate: 60 } }
     )
     if (!res.ok) return null
-    const pages = await res.json()
+    const pages = await res.json() as WPPage[]
     return pages[0] || null
   } catch (error) {
     console.error('Failed to fetch page:', error)
@@ -133,14 +133,14 @@ export async function getHomePage(): Promise<WPPage | null> {
       { next: { revalidate: 60 } }
     )
     if (settingsRes.ok) {
-      const settings = await settingsRes.json()
+      const settings = await settingsRes.json() as { home?: number }
       if (settings.home) {
         // Home is a page ID
         const pageRes = await fetch(
           `${WORDPRESS_API_URL}/pages/${settings.home}?_embed`,
           { next: { revalidate: 60 } }
         )
-        if (pageRes.ok) return pageRes.json()
+        if (pageRes.ok) return pageRes.json() as Promise<WPPage>
       }
     }
   } catch (e) {
@@ -169,7 +169,7 @@ export async function getMedia(id: number): Promise<WPMedia | null> {
       { next: { revalidate: 3600 } }
     )
     if (!res.ok) return null
-    return res.json()
+    return res.json() as Promise<WPMedia>
   } catch (error) {
     console.error('Failed to fetch media:', error)
     return null
