@@ -6,7 +6,7 @@ import { getPosts } from '@/lib/wordpress'
 export const revalidate = 60 // Revalidate every 60 seconds
 
 export default async function BlogPage() {
-  let posts = []
+  let posts: Awaited<ReturnType<typeof getPosts>> = []
 
   try {
     posts = await getPosts(10)
