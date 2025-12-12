@@ -1,5 +1,24 @@
 const WORDPRESS_API_URL = process.env.WORDPRESS_API_URL || 'https://wordpress-1097675-6067353.cloudwaysapps.com/wp-json/wp/v2'
 
+// Yoast SEO data structure (requires Yoast SEO plugin)
+export interface YoastSEO {
+  title?: string
+  description?: string
+  robots?: {
+    index?: string
+    follow?: string
+  }
+  og_title?: string
+  og_description?: string
+  og_image?: Array<{
+    url: string
+    width: number
+    height: number
+  }>
+  twitter_card?: string
+  canonical?: string
+}
+
 export interface WPPost {
   id: number
   slug: string
@@ -8,6 +27,7 @@ export interface WPPost {
   excerpt: { rendered: string }
   date: string
   featured_media: number
+  yoast_head_json?: YoastSEO
   _embedded?: {
     'wp:featuredmedia'?: Array<{
       source_url: string
@@ -23,6 +43,7 @@ export interface WPPage {
   content: { rendered: string }
   excerpt: { rendered: string }
   featured_media: number
+  yoast_head_json?: YoastSEO
   _embedded?: {
     'wp:featuredmedia'?: Array<{
       source_url: string
