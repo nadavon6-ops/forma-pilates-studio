@@ -9,6 +9,7 @@ import InstructorsSection from '@/components/forma-advanced/InstructorsSection'
 import ParallaxSection from '@/components/forma-advanced/ParallaxSection'
 import InteractiveGallery from '@/components/forma-advanced/InteractiveGallery'
 import SmoothCTA from '@/components/forma-advanced/SmoothCTA'
+import ServicesSection from '@/components/forma-advanced/ServicesSection'
 import Footer from '@/components/forma/Footer'
 import Navigation from '@/components/forma/Navigation'
 
@@ -85,7 +86,10 @@ export default async function HomePage() {
         {/* Section 3: Infinite scrolling carousel */}
         <InfiniteCarousel />
 
-        {/* Section 4: Interactive classes with video preview */}
+        {/* Section 4: Services/Articles from WordPress - SEO rich content */}
+        <ServicesSection />
+
+        {/* Section 5: Interactive classes with video preview */}
         <ClassesShowcase />
 
         {/* Section 5: Before/after comparison slider */}
