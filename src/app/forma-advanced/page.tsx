@@ -13,6 +13,10 @@ import Navigation from '@/components/forma/Navigation'
 export const metadata = {
   title: 'FORMA Pilates | Advanced React Showcase',
   description: 'Experience the power of React - animations and interactions impossible in WordPress alone.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function FormaAdvancedPage() {
