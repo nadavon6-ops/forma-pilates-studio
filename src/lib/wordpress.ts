@@ -64,50 +64,70 @@ export interface WPMedia {
 
 // Fetch all posts
 export async function getPosts(perPage: number = 10): Promise<WPPost[]> {
-  const res = await fetch(
-    `${WORDPRESS_API_URL}/posts?per_page=${perPage}&_embed`,
-    { next: { revalidate: 60 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch posts')
-  return res.json()
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL}/posts?per_page=${perPage}&_embed`,
+      { next: { revalidate: 60 } }
+    )
+    if (!res.ok) return []
+    return res.json()
+  } catch (error) {
+    console.error('Failed to fetch posts:', error)
+    return []
+  }
 }
 
 // Fetch single post by slug
 export async function getPostBySlug(slug: string): Promise<WPPost | null> {
-  const res = await fetch(
-    `${WORDPRESS_API_URL}/posts?slug=${slug}&_embed`,
-    { next: { revalidate: 60 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch post')
-  const posts = await res.json()
-  return posts[0] || null
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL}/posts?slug=${slug}&_embed`,
+      { next: { revalidate: 60 } }
+    )
+    if (!res.ok) return null
+    const posts = await res.json()
+    return posts[0] || null
+  } catch (error) {
+    console.error('Failed to fetch post:', error)
+    return null
+  }
 }
 
 // Fetch all pages
 export async function getPages(): Promise<WPPage[]> {
-  const res = await fetch(
-    `${WORDPRESS_API_URL}/pages?_embed`,
-    { next: { revalidate: 60 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch pages')
-  return res.json()
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL}/pages?_embed`,
+      { next: { revalidate: 60 } }
+    )
+    if (!res.ok) return []
+    return res.json()
+  } catch (error) {
+    console.error('Failed to fetch pages:', error)
+    return []
+  }
 }
 
 // Fetch single page by slug
 export async function getPageBySlug(slug: string): Promise<WPPage | null> {
-  const res = await fetch(
-    `${WORDPRESS_API_URL}/pages?slug=${slug}&_embed`,
-    { next: { revalidate: 60 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch page')
-  const pages = await res.json()
-  return pages[0] || null
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL}/pages?slug=${slug}&_embed`,
+      { next: { revalidate: 60 } }
+    )
+    if (!res.ok) return null
+    const pages = await res.json()
+    return pages[0] || null
+  } catch (error) {
+    console.error('Failed to fetch page:', error)
+    return null
+  }
 }
 
 // Fetch homepage (usually slug is 'home' or page ID)
 export async function getHomePage(): Promise<WPPage | null> {
-  // Try to get front page settings first
   try {
+    // Try to get front page settings first
     const settingsRes = await fetch(
       `${WORDPRESS_API_URL.replace('/wp/v2', '')}/`,
       { next: { revalidate: 60 } }
@@ -124,14 +144,18 @@ export async function getHomePage(): Promise<WPPage | null> {
       }
     }
   } catch (e) {
-    // Fallback to slug-based lookup
+    console.error('Failed to fetch homepage settings:', e)
   }
 
   // Fallback: try common homepage slugs
-  const homeSlugs = ['home', 'homepage', 'front-page']
-  for (const slug of homeSlugs) {
-    const page = await getPageBySlug(slug)
-    if (page) return page
+  try {
+    const homeSlugs = ['home', 'homepage', 'front-page']
+    for (const slug of homeSlugs) {
+      const page = await getPageBySlug(slug)
+      if (page) return page
+    }
+  } catch (e) {
+    console.error('Failed to fetch homepage by slug:', e)
   }
 
   return null
@@ -139,22 +163,32 @@ export async function getHomePage(): Promise<WPPage | null> {
 
 // Fetch media by ID
 export async function getMedia(id: number): Promise<WPMedia | null> {
-  const res = await fetch(
-    `${WORDPRESS_API_URL}/media/${id}`,
-    { next: { revalidate: 3600 } }
-  )
-  if (!res.ok) return null
-  return res.json()
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL}/media/${id}`,
+      { next: { revalidate: 3600 } }
+    )
+    if (!res.ok) return null
+    return res.json()
+  } catch (error) {
+    console.error('Failed to fetch media:', error)
+    return null
+  }
 }
 
 // Fetch site info
 export async function getSiteInfo() {
-  const res = await fetch(
-    `${WORDPRESS_API_URL.replace('/wp/v2', '')}`,
-    { next: { revalidate: 3600 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch site info')
-  return res.json()
+  try {
+    const res = await fetch(
+      `${WORDPRESS_API_URL.replace('/wp/v2', '')}`,
+      { next: { revalidate: 3600 } }
+    )
+    if (!res.ok) return null
+    return res.json()
+  } catch (error) {
+    console.error('Failed to fetch site info:', error)
+    return null
+  }
 }
 
 // Fetch menus (requires WP REST API Menus plugin or similar)
