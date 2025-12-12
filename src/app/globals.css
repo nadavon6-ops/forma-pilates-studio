@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   FORMA PILATES - GLOBAL STYLES
+   ======================================== */
+
+@layer base {
+  :root {
+    /* Brand Colors */
+    --sage: #4A5D52;
+    --sage-light: #E8EDEA;
+    --cream: #F7F4EF;
+    --terracotta: #C4907A;
+    --terracotta-dark: #A67563;
+    --charcoal: #2C2C2C;
+    --white: #FFFFFF;
+
+    /* Typography */
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--charcoal);
+    background-color: var(--cream);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 300;
+  }
+}
+
+@layer components {
+  /* Section Label */
+  .section-label {
+    @apply text-xs uppercase tracking-[0.15em] text-terracotta mb-4 block font-medium;
+  }
+
+  /* Section Title */
+  .section-title {
+    @apply text-section-mobile md:text-section font-heading text-charcoal font-light;
+  }
+
+  /* Body Text */
+  .body-text {
+    @apply text-base md:text-lg text-charcoal/70 leading-relaxed font-body;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-terracotta text-white
+           px-8 py-4 rounded-full font-medium text-base
+           transition-all duration-300 ease-out
+           hover:bg-terracotta-dark hover:shadow-button hover:-translate-y-0.5
+           active:translate-y-0;
+  }
+
+  .btn-primary-large {
+    @apply btn-primary px-10 py-5 text-lg;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center border-2 border-sage text-sage
+           px-8 py-4 rounded-full font-medium text-base
+           transition-all duration-300 ease-out
+           hover:bg-sage hover:text-white;
+  }
+
+  /* Ghost Button (for dark backgrounds) */
+  .btn-ghost-light {
+    @apply inline-flex items-center justify-center border-2 border-white text-white
+           px-8 py-4 rounded-full font-medium text-base
+           transition-all duration-300 ease-out
+           hover:bg-white/10;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-500
+           hover:shadow-elegant hover:-translate-y-2;
+  }
+
+  /* Link with underline animation */
+  .link-underline {
+    @apply relative inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-terracotta transition-all duration-300;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section Spacing */
+  .section-padding {
+    @apply py-20 md:py-24 lg:py-section;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-sage to-terracotta;
+  }
+
+  /* Smooth image zoom */
+  .img-zoom {
+    @apply transition-transform duration-700 ease-out;
+  }
+
+  .img-zoom:hover {
+    @apply scale-105;
+  }
+
+  /* Overlay gradients */
+  .overlay-dark {
+    @apply bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent;
+  }
+
+  .overlay-hero {
+    @apply bg-gradient-to-t from-charcoal/40 via-transparent to-transparent;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Aspect ratios */
+  .aspect-portrait {
+    aspect-ratio: 3/4;
+  }
+
+  .aspect-landscape {
+    aspect-ratio: 4/3;
+  }
+
+  /* Quote styling */
+  .quote-mark {
+    @apply text-[200px] font-heading text-sage/10 absolute -top-10 -left-4 leading-none select-none;
+  }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+/* Smooth scroll with Lenis */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+/* ========================================
+   RESPONSIVE TYPOGRAPHY FINE-TUNING
+   ======================================== */
+
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 42px;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-title {
+    font-size: 56px;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hero-title {
+    font-size: 80px;
+    line-height: 1.1;
+  }
+}
