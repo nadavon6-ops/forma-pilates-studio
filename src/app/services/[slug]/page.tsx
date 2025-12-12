@@ -70,9 +70,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
+// Enable dynamic rendering for Hebrew slugs
+export const dynamicParams = true
+
 export async function generateStaticParams() {
   return Object.keys(slugToPageId).map((slug) => ({
-    slug: encodeURIComponent(slug),
+    slug: slug,
   }))
 }
 
