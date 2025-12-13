@@ -1,193 +1,116 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useVelocity, useAnimationFrame } from 'framer-motion'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useAnimationFrame } from 'framer-motion'
 
-// Brand colors
+// Premium brand colors - elegant palette
 const BRAND = {
   primary: '#0485b2',
   light: '#06a5d9',
   dark: '#036d94',
-  glow: 'rgba(4, 133, 178, 0.5)',
-  rgb: { r: 4, g: 133, b: 178 },
+  gold: '#c9a962',
+  cream: '#f5f5f0',
 }
 
 // ============================================
-// PERLIN NOISE - For organic animations
-// (Impossible in WordPress - requires JS computation)
+// ELEGANT PARTICLE FIELD
+// Subtle floating particles - premium feel
 // ============================================
-class PerlinNoise {
-  private permutation: number[] = []
-
-  constructor() {
-    const p = []
-    for (let i = 0; i < 256; i++) p[i] = Math.floor(Math.random() * 256)
-    this.permutation = [...p, ...p]
-  }
-
-  private fade(t: number): number {
-    return t * t * t * (t * (t * 6 - 15) + 10)
-  }
-
-  private lerp(a: number, b: number, t: number): number {
-    return a + t * (b - a)
-  }
-
-  private grad(hash: number, x: number, y: number): number {
-    const h = hash & 3
-    const u = h < 2 ? x : y
-    const v = h < 2 ? y : x
-    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v)
-  }
-
-  noise2D(x: number, y: number): number {
-    const X = Math.floor(x) & 255
-    const Y = Math.floor(y) & 255
-    x -= Math.floor(x)
-    y -= Math.floor(y)
-    const u = this.fade(x)
-    const v = this.fade(y)
-    const A = this.permutation[X] + Y
-    const B = this.permutation[X + 1] + Y
-    return this.lerp(
-      this.lerp(this.grad(this.permutation[A], x, y), this.grad(this.permutation[B], x - 1, y), u),
-      this.lerp(this.grad(this.permutation[A + 1], x, y - 1), this.grad(this.permutation[B + 1], x - 1, y - 1), u),
-      v
-    )
-  }
-}
-
-// ============================================
-// WEBGL AURORA SHADER BACKGROUND
-// (100% impossible in WordPress - requires WebGL shaders)
-// ============================================
-function AuroraBackground() {
+function ElegantParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gl = canvas.getContext('webgl')
-    if (!gl) return
-
-    // Vertex shader
-    const vertexShaderSource = `
-      attribute vec2 position;
-      void main() {
-        gl_Position = vec4(position, 0.0, 1.0);
-      }
-    `
-
-    // Fragment shader - creates aurora effect
-    const fragmentShaderSource = `
-      precision highp float;
-      uniform float time;
-      uniform vec2 resolution;
-
-      // Simplex noise function
-      vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-
-      float snoise(vec2 v) {
-        const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-        vec2 i  = floor(v + dot(v, C.yy));
-        vec2 x0 = v - i + dot(i, C.xx);
-        vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-        vec4 x12 = x0.xyxy + C.xxzz;
-        x12.xy -= i1;
-        i = mod289(i);
-        vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-        vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-        m = m*m; m = m*m;
-        vec3 x = 2.0 * fract(p * C.www) - 1.0;
-        vec3 h = abs(x) - 0.5;
-        vec3 ox = floor(x + 0.5);
-        vec3 a0 = x - ox;
-        m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-        vec3 g;
-        g.x = a0.x * x0.x + h.x * x0.y;
-        g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-        return 130.0 * dot(m, g);
-      }
-
-      void main() {
-        vec2 uv = gl_FragCoord.xy / resolution.xy;
-
-        // Multiple layers of noise for aurora waves
-        float n1 = snoise(vec2(uv.x * 3.0 + time * 0.1, uv.y * 2.0 + time * 0.05));
-        float n2 = snoise(vec2(uv.x * 5.0 - time * 0.15, uv.y * 3.0 + time * 0.08));
-        float n3 = snoise(vec2(uv.x * 7.0 + time * 0.12, uv.y * 4.0 - time * 0.06));
-
-        // Combine noise layers
-        float noise = (n1 + n2 * 0.5 + n3 * 0.25) / 1.75;
-
-        // Aurora color gradient
-        vec3 color1 = vec3(0.016, 0.522, 0.698); // Brand primary
-        vec3 color2 = vec3(0.024, 0.647, 0.851); // Brand light
-        vec3 color3 = vec3(0.012, 0.427, 0.580); // Brand dark
-
-        // Mix colors based on position and noise
-        vec3 color = mix(color1, color2, uv.y + noise * 0.3);
-        color = mix(color, color3, sin(uv.x * 3.14159 + time * 0.2) * 0.5 + 0.5);
-
-        // Aurora wave intensity
-        float wave = sin(uv.y * 10.0 + noise * 5.0 + time) * 0.5 + 0.5;
-        wave *= smoothstep(0.0, 0.3, uv.y) * smoothstep(1.0, 0.5, uv.y);
-
-        // Final color with glow
-        color *= wave * 0.4 + 0.1;
-        color += vec3(0.02, 0.05, 0.08); // Dark base
-
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `
-
-    // Compile shaders
-    const vertexShader = gl.createShader(gl.VERTEX_SHADER)!
-    gl.shaderSource(vertexShader, vertexShaderSource)
-    gl.compileShader(vertexShader)
-
-    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)!
-    gl.shaderSource(fragmentShader, fragmentShaderSource)
-    gl.compileShader(fragmentShader)
-
-    const program = gl.createProgram()!
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-    gl.useProgram(program)
-
-    // Create geometry
-    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1])
-    const buffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-
-    const position = gl.getAttribLocation(program, 'position')
-    gl.enableVertexAttribArray(position)
-    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
-
-    const timeUniform = gl.getUniformLocation(program, 'time')
-    const resolutionUniform = gl.getUniformLocation(program, 'resolution')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
-      gl.viewport(0, 0, canvas.width, canvas.height)
-      gl.uniform2f(resolutionUniform, canvas.width, canvas.height)
     }
     resize()
     window.addEventListener('resize', resize)
 
+    // Elegant floating particles
+    const particles: Array<{
+      x: number
+      y: number
+      size: number
+      speedX: number
+      speedY: number
+      opacity: number
+      pulse: number
+    }> = []
+
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 1,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5 + 0.1,
+        pulse: Math.random() * Math.PI * 2,
+      })
+    }
+
     let animationId: number
-    let startTime = Date.now()
+    let time = 0
 
     const animate = () => {
-      const time = (Date.now() - startTime) / 1000
-      gl.uniform1f(timeUniform, time)
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      time += 0.01
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      particles.forEach((p, i) => {
+        // Smooth movement
+        p.x += p.speedX
+        p.y += p.speedY
+        p.pulse += 0.02
+
+        // Wrap around edges
+        if (p.x < 0) p.x = canvas.width
+        if (p.x > canvas.width) p.x = 0
+        if (p.y < 0) p.y = canvas.height
+        if (p.y > canvas.height) p.y = 0
+
+        // Pulsing opacity
+        const pulseOpacity = p.opacity * (0.5 + Math.sin(p.pulse) * 0.5)
+
+        // Draw elegant glow
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4)
+        gradient.addColorStop(0, `rgba(4, 133, 178, ${pulseOpacity})`)
+        gradient.addColorStop(1, 'transparent')
+
+        ctx.beginPath()
+        ctx.fillStyle = gradient
+        ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Draw crisp center
+        ctx.beginPath()
+        ctx.fillStyle = `rgba(255, 255, 255, ${pulseOpacity * 0.8})`
+        ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Connect nearby particles with subtle lines
+        particles.slice(i + 1).forEach(p2 => {
+          const dx = p.x - p2.x
+          const dy = p.y - p2.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+
+          if (dist < 150) {
+            ctx.beginPath()
+            ctx.strokeStyle = `rgba(4, 133, 178, ${0.05 * (1 - dist / 150)})`
+            ctx.lineWidth = 0.5
+            ctx.moveTo(p.x, p.y)
+            ctx.lineTo(p2.x, p2.y)
+            ctx.stroke()
+          }
+        })
+      })
+
       animationId = requestAnimationFrame(animate)
     }
     animate()
@@ -202,323 +125,159 @@ function AuroraBackground() {
 }
 
 // ============================================
-// MAGNETIC CURSOR WITH PARTICLE EXPLOSION
-// (Impossible in WordPress - requires real-time physics)
+// SUBTLE GRADIENT BACKGROUND
+// Premium dark gradient with soft glow
 // ============================================
-function MagneticCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null)
-  const trailRef = useRef<HTMLDivElement>(null)
-  const particlesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number; life: number; size: number }>>([])
-  const [isHovering, setIsHovering] = useState(false)
-  const [isClicking, setIsClicking] = useState(false)
+function PremiumBackground() {
+  return (
+    <div className="absolute inset-0">
+      {/* Base gradient */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(4, 133, 178, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 80% 60%, rgba(4, 133, 178, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 30% at 20% 80%, rgba(6, 165, 217, 0.05) 0%, transparent 50%),
+            linear-gradient(180deg, #0a0a0f 0%, #0d0d14 50%, #0a0a0f 100%)
+          `
+        }}
+      />
 
-  // Spring physics for smooth cursor movement
+      {/* Subtle grain texture for premium feel */}
+      <div
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+    </div>
+  )
+}
+
+// ============================================
+// ELEGANT CURSOR
+// Minimal, sophisticated cursor
+// ============================================
+function ElegantCursor() {
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
-  const springConfig = { damping: 25, stiffness: 400 }
+  const springConfig = { damping: 30, stiffness: 300 }
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
-    const particles = particlesRef.current
-    let animationId: number
-
     const handleMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX)
       cursorY.set(e.clientY)
-
-      // Add trail particles
-      if (Math.random() > 0.7) {
-        particles.push({
-          x: e.clientX,
-          y: e.clientY,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          life: 1,
-          size: Math.random() * 4 + 2,
-        })
-      }
     }
-
-    const handleMouseDown = (e: MouseEvent) => {
-      setIsClicking(true)
-      // Particle explosion on click
-      for (let i = 0; i < 20; i++) {
-        const angle = (Math.PI * 2 / 20) * i
-        const speed = Math.random() * 8 + 4
-        particles.push({
-          x: e.clientX,
-          y: e.clientY,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          life: 1,
-          size: Math.random() * 6 + 3,
-        })
-      }
-    }
-
-    const handleMouseUp = () => setIsClicking(false)
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      if (target.matches('button, a, [role="button"], input, textarea')) {
+      if (target.matches('button, a, [role="button"], input, textarea, [data-cursor-hover]')) {
         setIsHovering(true)
       }
     }
 
     const handleMouseOut = () => setIsHovering(false)
 
-    // Particle animation loop
-    const animateParticles = () => {
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i]
-        p.x += p.vx
-        p.y += p.vy
-        p.vx *= 0.98
-        p.vy *= 0.98
-        p.vy += 0.1 // gravity
-        p.life -= 0.02
-
-        if (p.life <= 0) {
-          particles.splice(i, 1)
-        }
-      }
-      animationId = requestAnimationFrame(animateParticles)
-    }
-    animateParticles()
-
     window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('mouseover', handleMouseOver)
     document.addEventListener('mouseout', handleMouseOut)
 
     return () => {
-      cancelAnimationFrame(animationId)
       window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mousedown', handleMouseDown)
-      window.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('mouseover', handleMouseOver)
       document.removeEventListener('mouseout', handleMouseOut)
     }
   }, [cursorX, cursorY])
 
-  // Render particles
-  const [, forceUpdate] = useState(0)
-  useAnimationFrame(() => forceUpdate(n => n + 1))
-
   return (
-    <>
-      {/* Trail particles */}
-      {particlesRef.current.map((p, i) => (
-        <motion.div
-          key={i}
-          className="fixed pointer-events-none z-[9998] rounded-full"
-          style={{
-            left: p.x,
-            top: p.y,
-            width: p.size,
-            height: p.size,
-            backgroundColor: BRAND.primary,
-            opacity: p.life,
-            transform: 'translate(-50%, -50%)',
-            boxShadow: `0 0 ${p.size * 2}px ${BRAND.primary}`,
-          }}
-        />
-      ))}
-
-      {/* Main cursor */}
+    <motion.div
+      className="fixed pointer-events-none z-[9999] hidden md:block"
+      style={{
+        x: cursorXSpring,
+        y: cursorYSpring,
+        translateX: '-50%',
+        translateY: '-50%',
+      }}
+    >
+      {/* Outer ring */}
       <motion.div
-        ref={cursorRef}
-        className="fixed pointer-events-none z-[9999] hidden md:block"
-        style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
-          translateX: '-50%',
-          translateY: '-50%',
+        animate={{
+          width: isHovering ? 50 : 40,
+          height: isHovering ? 50 : 40,
+          borderColor: isHovering ? BRAND.light : `${BRAND.primary}60`,
         }}
-      >
-        <motion.div
-          animate={{
-            scale: isClicking ? 0.8 : isHovering ? 1.5 : 1,
-            borderColor: isHovering ? BRAND.light : BRAND.primary,
-          }}
-          transition={{ type: 'spring', damping: 20, stiffness: 400 }}
-          className="w-12 h-12 border-2 rounded-full flex items-center justify-center"
-          style={{ borderColor: BRAND.primary }}
-        >
-          {/* Inner glow */}
-          <motion.div
-            animate={{ scale: isHovering ? 1 : 0 }}
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: BRAND.primary }}
-          />
-        </motion.div>
+        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        className="rounded-full border"
+        style={{ borderWidth: '1px' }}
+      />
 
-        {/* Crosshair */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="w-6 h-px" style={{ backgroundColor: `${BRAND.primary}50` }} />
-          <div className="w-px h-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ backgroundColor: `${BRAND.primary}50` }} />
-        </div>
-      </motion.div>
-    </>
+      {/* Inner dot */}
+      <motion.div
+        animate={{
+          scale: isHovering ? 0 : 1,
+          opacity: isHovering ? 0 : 1,
+        }}
+        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
+        style={{ backgroundColor: BRAND.primary }}
+      />
+    </motion.div>
   )
 }
 
 // ============================================
-// 3D MORPHING MESH GRID
-// (Impossible in WordPress - requires vertex manipulation)
+// SMOOTH COUNTER ANIMATION
+// Elegant number animation
 // ============================================
-function MorphingMeshGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const noiseRef = useRef<PerlinNoise | null>(null)
-  const mouseRef = useRef({ x: 0.5, y: 0.5 })
+function AnimatedCounter({ value, suffix = '', prefix = '' }: { value: number; suffix?: string; prefix?: string }) {
+  const spring = useSpring(0, { damping: 40, stiffness: 80 })
+  const [displayValue, setDisplayValue] = useState('0')
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    noiseRef.current = new PerlinNoise()
-    const noise = noiseRef.current
-
-    const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    resize()
-    window.addEventListener('resize', resize)
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = {
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
-      }
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-
-    let time = 0
-    let animationId: number
-
-    const animate = () => {
-      time += 0.008
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const cols = 40
-      const rows = 25
-      const cellWidth = canvas.width / cols
-      const cellHeight = canvas.height / rows
-
-      // Draw morphing grid
-      ctx.strokeStyle = `${BRAND.primary}30`
-      ctx.lineWidth = 0.5
-
-      for (let y = 0; y <= rows; y++) {
-        ctx.beginPath()
-        for (let x = 0; x <= cols; x++) {
-          // Calculate distance from mouse
-          const dx = x / cols - mouseRef.current.x
-          const dy = y / rows - mouseRef.current.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-
-          // Noise-based displacement
-          const noiseVal = noise.noise2D(x * 0.1 + time, y * 0.1 + time)
-          const displacement = noiseVal * 30 + Math.sin(dist * 10 - time * 3) * 20 * Math.max(0, 1 - dist * 2)
-
-          const px = x * cellWidth
-          const py = y * cellHeight + displacement
-
-          if (x === 0) {
-            ctx.moveTo(px, py)
-          } else {
-            ctx.lineTo(px, py)
-          }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          spring.set(value)
         }
-        ctx.stroke()
-      }
+      },
+      { threshold: 0.5 }
+    )
 
-      // Vertical lines
-      for (let x = 0; x <= cols; x++) {
-        ctx.beginPath()
-        for (let y = 0; y <= rows; y++) {
-          const dx = x / cols - mouseRef.current.x
-          const dy = y / rows - mouseRef.current.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [value, spring])
 
-          const noiseVal = noise.noise2D(x * 0.1 + time, y * 0.1 + time)
-          const displacement = noiseVal * 30 + Math.sin(dist * 10 - time * 3) * 20 * Math.max(0, 1 - dist * 2)
+  useEffect(() => {
+    return spring.on('change', (v) => setDisplayValue(Math.floor(v).toLocaleString()))
+  }, [spring])
 
-          const px = x * cellWidth
-          const py = y * cellHeight + displacement
-
-          if (y === 0) {
-            ctx.moveTo(px, py)
-          } else {
-            ctx.lineTo(px, py)
-          }
-        }
-        ctx.stroke()
-      }
-
-      // Draw glowing nodes at intersections
-      for (let y = 0; y <= rows; y += 2) {
-        for (let x = 0; x <= cols; x += 2) {
-          const dx = x / cols - mouseRef.current.x
-          const dy = y / rows - mouseRef.current.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-
-          const noiseVal = noise.noise2D(x * 0.1 + time, y * 0.1 + time)
-          const displacement = noiseVal * 30 + Math.sin(dist * 10 - time * 3) * 20 * Math.max(0, 1 - dist * 2)
-
-          const px = x * cellWidth
-          const py = y * cellHeight + displacement
-
-          const nodeSize = 2 + Math.max(0, 1 - dist * 3) * 4
-
-          ctx.beginPath()
-          const gradient = ctx.createRadialGradient(px, py, 0, px, py, nodeSize * 3)
-          gradient.addColorStop(0, `${BRAND.primary}80`)
-          gradient.addColorStop(1, 'transparent')
-          ctx.fillStyle = gradient
-          ctx.arc(px, py, nodeSize * 3, 0, Math.PI * 2)
-          ctx.fill()
-
-          ctx.beginPath()
-          ctx.fillStyle = '#fff'
-          ctx.arc(px, py, nodeSize * 0.5, 0, Math.PI * 2)
-          ctx.fill()
-        }
-      }
-
-      animationId = requestAnimationFrame(animate)
-    }
-    animate()
-
-    return () => {
-      cancelAnimationFrame(animationId)
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [])
-
-  return <canvas ref={canvasRef} className="absolute inset-0 opacity-40" />
+  return (
+    <span ref={ref} className="tabular-nums">
+      {prefix}{displayValue}{suffix}
+    </span>
+  )
 }
 
 // ============================================
-// FLOATING HOLOGRAPHIC CARDS WITH DEPTH
-// (Impossible in WordPress - requires 3D transforms + physics)
+// ELEGANT FLOATING CARD
+// Premium glass morphism card
 // ============================================
-function HolographicDataCard({ data, index, total }: { data: { keyword: string; position: number; change: string }; index: number; total: number }) {
+function FloatingCard({
+  children,
+  delay = 0,
+  className = ''
+}: {
+  children: React.ReactNode
+  delay?: number
+  className?: string
+}) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
-
-  // Calculate 3D position in a circular arrangement
-  const angle = (index / total) * Math.PI * 2 - Math.PI / 2
-  const radius = 180
-  const x = Math.cos(angle) * radius
-  const z = Math.sin(angle) * radius
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return
@@ -532,298 +291,266 @@ function HolographicDataCard({ data, index, total }: { data: { keyword: string; 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, scale: 0, rotateY: -180 }}
-      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-      transition={{ delay: 0.5 + index * 0.1, duration: 0.8, type: 'spring' }}
-      whileHover={{ scale: 1.1, z: 50 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePos({ x: 0.5, y: 0.5 })}
-      className="absolute bg-black/40 backdrop-blur-xl rounded-2xl p-4 border border-white/10 cursor-pointer"
+      className={`relative overflow-hidden ${className}`}
       style={{
-        transform: `translateX(${x}px) translateZ(${z}px) rotateY(${(mousePos.x - 0.5) * 20}deg) rotateX(${(mousePos.y - 0.5) * -20}deg)`,
-        transformStyle: 'preserve-3d',
-        width: '200px',
+        transform: `perspective(1000px) rotateX(${(mousePos.y - 0.5) * -5}deg) rotateY(${(mousePos.x - 0.5) * 5}deg)`,
+        transition: 'transform 0.3s ease-out',
       }}
     >
-      {/* Holographic shine effect */}
+      {/* Subtle shine effect */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none overflow-hidden"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          background: `linear-gradient(${105 + (mousePos.x - 0.5) * 60}deg, transparent 40%, ${BRAND.primary}30 50%, transparent 60%)`,
+          background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(255,255,255,0.03) 0%, transparent 50%)`,
         }}
       />
+      {children}
+    </motion.div>
+  )
+}
 
-      {/* Prismatic edge */}
-      <div
-        className="absolute -inset-px rounded-2xl pointer-events-none"
-        style={{
-          background: `linear-gradient(${mousePos.x * 360}deg, ${BRAND.primary}50, ${BRAND.light}50, ${BRAND.dark}50, ${BRAND.primary}50)`,
-          mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-          maskComposite: 'xor',
-          WebkitMaskComposite: 'xor',
-          padding: '1px',
-        }}
-      />
+// ============================================
+// PREMIUM KEYWORD DISPLAY
+// Clean, elegant keyword showcase
+// ============================================
+function KeywordShowcase() {
+  const keywords = [
+    { keyword: 'קידום אתרים', position: 1, trend: '+12' },
+    { keyword: 'SEO ישראל', position: 1, trend: '+8' },
+    { keyword: 'שיווק דיגיטלי', position: 2, trend: '+15' },
+    { keyword: 'בניית אתרים', position: 3, trend: '+22' },
+  ]
 
-      <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+  return (
+    <div className="space-y-3">
+      {keywords.map((kw, i) => (
+        <motion.div
+          key={kw.keyword}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-4 p-4 rounded-xl backdrop-blur-sm"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            borderLeft: `2px solid ${kw.position === 1 ? BRAND.primary : 'rgba(255,255,255,0.1)'}`,
+          }}
+        >
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm"
-            style={{
-              background: data.position === 1
-                ? `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})`
-                : data.position <= 3
-                  ? 'linear-gradient(135deg, #6b7280, #9ca3af)'
-                  : '#4b5563'
-            }}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
+              kw.position === 1
+                ? 'text-white'
+                : 'text-gray-400 border border-gray-700'
+            }`}
+            style={kw.position === 1 ? { background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` } : {}}
           >
-            #{data.position}
+            #{kw.position}
           </div>
-          <div>
-            <div className="text-white font-semibold text-sm">{data.keyword}</div>
-            <div className="text-green-400 text-xs font-mono">{data.change}</div>
+          <div className="flex-1">
+            <div className="text-white font-medium">{kw.keyword}</div>
           </div>
-        </div>
+          <div className="text-emerald-400 text-sm font-mono">
+            {kw.trend}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================
+// ELEGANT PERFORMANCE GRAPH
+// Minimal, sophisticated chart
+// ============================================
+function PerformanceGraph() {
+  const points = [20, 35, 45, 40, 60, 75, 70, 85, 90, 95]
+  const pathRef = useRef<SVGPathElement>(null)
+
+  // Create smooth curve through points
+  const createPath = () => {
+    const width = 300
+    const height = 150
+    const padding = 20
+    const graphWidth = width - padding * 2
+    const graphHeight = height - padding * 2
+
+    let path = ''
+    points.forEach((point, i) => {
+      const x = padding + (i / (points.length - 1)) * graphWidth
+      const y = height - padding - (point / 100) * graphHeight
+
+      if (i === 0) {
+        path += `M ${x} ${y}`
+      } else {
+        const prevX = padding + ((i - 1) / (points.length - 1)) * graphWidth
+        const prevY = height - padding - (points[i - 1] / 100) * graphHeight
+        const cpX1 = prevX + (x - prevX) / 2
+        const cpX2 = prevX + (x - prevX) / 2
+        path += ` C ${cpX1} ${prevY}, ${cpX2} ${y}, ${x} ${y}`
+      }
+    })
+    return path
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.2, duration: 0.8 }}
+      className="relative"
+    >
+      <svg width="300" height="150" className="w-full h-auto">
+        {/* Grid lines */}
+        {[0, 25, 50, 75, 100].map((y) => (
+          <line
+            key={y}
+            x1="20"
+            y1={150 - 20 - (y / 100) * 110}
+            x2="280"
+            y2={150 - 20 - (y / 100) * 110}
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="1"
+          />
+        ))}
+
+        {/* Gradient fill */}
+        <defs>
+          <linearGradient id="graphGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={BRAND.primary} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={BRAND.primary} stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={BRAND.dark} />
+            <stop offset="100%" stopColor={BRAND.light} />
+          </linearGradient>
+        </defs>
+
+        {/* Fill area */}
+        <motion.path
+          d={`${createPath()} L 280 130 L 20 130 Z`}
+          fill="url(#graphGradient)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+        />
+
+        {/* Line */}
+        <motion.path
+          ref={pathRef}
+          d={createPath()}
+          fill="none"
+          stroke="url(#lineGradient)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 1.3, duration: 1.5, ease: "easeOut" }}
+        />
+
+        {/* End dot */}
+        <motion.circle
+          cx="280"
+          cy={150 - 20 - (95 / 100) * 110}
+          r="4"
+          fill={BRAND.light}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 2.8, type: 'spring' }}
+        />
+
+        {/* Glow around end dot */}
+        <motion.circle
+          cx="280"
+          cy={150 - 20 - (95 / 100) * 110}
+          r="8"
+          fill={BRAND.primary}
+          opacity="0.3"
+          initial={{ scale: 0 }}
+          animate={{ scale: [1, 1.5, 1] }}
+          transition={{ delay: 2.8, duration: 2, repeat: Infinity }}
+        />
+      </svg>
+
+      {/* Labels */}
+      <div className="absolute bottom-0 left-0 right-0 flex justify-between px-5 text-xs text-gray-500">
+        <span>ינואר</span>
+        <span>היום</span>
       </div>
     </motion.div>
   )
 }
 
 // ============================================
-// 3D ROTATING KEYWORD ORBIT
-// (Impossible in WordPress - requires 3D CSS transforms)
+// PREMIUM BUTTON
+// Elegant, subtle hover effects
 // ============================================
-function KeywordOrbit() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [rotation, setRotation] = useState(0)
-
-  const keywords = [
-    { keyword: 'קידום אתרים', position: 1, change: '+12' },
-    { keyword: 'SEO ישראל', position: 1, change: '+8' },
-    { keyword: 'בניית אתרים', position: 2, change: '+15' },
-    { keyword: 'שיווק דיגיטלי', position: 3, change: '+22' },
-    { keyword: 'קידום עסקים', position: 2, change: '+18' },
-    { keyword: 'פרסום בגוגל', position: 4, change: '+10' },
-  ]
-
-  useAnimationFrame((time) => {
-    setRotation(time / 50)
-  })
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative w-[400px] h-[400px]"
-      style={{
-        perspective: '1000px',
-        perspectiveOrigin: 'center center',
-      }}
-    >
-      {/* Center orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24">
-        <motion.div
-          animate={{
-            boxShadow: [
-              `0 0 30px ${BRAND.primary}40`,
-              `0 0 60px ${BRAND.primary}60`,
-              `0 0 30px ${BRAND.primary}40`,
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-full h-full rounded-full flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
-        >
-          <span className="text-white font-black text-2xl">#1</span>
-        </motion.div>
-
-        {/* Orbiting ring */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-          className="absolute inset-0"
-        >
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white" />
-        </motion.div>
-      </div>
-
-      {/* Orbiting cards */}
-      <div
-        className="absolute inset-0"
-        style={{
-          transform: `rotateY(${rotation}deg)`,
-          transformStyle: 'preserve-3d',
-        }}
-      >
-        {keywords.map((kw, i) => (
-          <HolographicDataCard key={kw.keyword} data={kw} index={i} total={keywords.length} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ============================================
-// ANIMATED STATISTICS WITH PHYSICS
-// ============================================
-function PhysicsCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
-  const spring = useSpring(0, { damping: 30, stiffness: 100 })
-  const display = useTransform(spring, (v) => Math.floor(v).toLocaleString())
-  const [displayValue, setDisplayValue] = useState('0')
-  const ref = useRef<HTMLDivElement>(null)
-  const [isInView, setIsInView] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true)
-          spring.set(value)
-        }
-      },
-      { threshold: 0.5 }
-    )
-
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [value, spring])
-
-  useEffect(() => {
-    return display.on('change', (v) => setDisplayValue(v))
-  }, [display])
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {displayValue}{suffix}
-    </span>
-  )
-}
-
-// ============================================
-// GLITCH TEXT WITH RGB SPLIT
-// (Impossible in WordPress - requires CSS clip-path animation)
-// ============================================
-function RGBGlitchText({ children }: { children: string }) {
-  const [glitching, setGlitching] = useState(false)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 150)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <span className="relative inline-block">
-      {/* Red channel */}
-      <span
-        className="absolute inset-0"
-        style={{
-          color: '#ff0000',
-          mixBlendMode: 'screen',
-          transform: glitching ? 'translateX(-3px)' : 'translateX(0)',
-          clipPath: glitching ? 'inset(20% 0 30% 0)' : 'inset(0)',
-          transition: 'transform 0.05s, clip-path 0.05s',
-        }}
-        aria-hidden="true"
-      >
-        {children}
-      </span>
-
-      {/* Blue channel */}
-      <span
-        className="absolute inset-0"
-        style={{
-          color: '#00ffff',
-          mixBlendMode: 'screen',
-          transform: glitching ? 'translateX(3px)' : 'translateX(0)',
-          clipPath: glitching ? 'inset(60% 0 10% 0)' : 'inset(0)',
-          transition: 'transform 0.05s, clip-path 0.05s',
-        }}
-        aria-hidden="true"
-      >
-        {children}
-      </span>
-
-      {/* Main text */}
-      <span className="relative" style={{ color: BRAND.primary }}>
-        {children}
-      </span>
-    </span>
-  )
-}
-
-// ============================================
-// LIQUID BUTTON WITH MAGNETIC EFFECT
-// ============================================
-function MagneticButton({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+function PremiumButton({
+  children,
+  variant = 'primary',
+  href,
+}: {
+  children: React.ReactNode
+  variant?: 'primary' | 'outline'
+  href?: string
+}) {
+  const buttonRef = useRef<HTMLButtonElement | HTMLAnchorElement>(null)
   const [isHovering, setIsHovering] = useState(false)
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!buttonRef.current) return
-    const rect = buttonRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
+  const baseClasses = "relative px-8 py-4 rounded-full font-medium text-base overflow-hidden transition-all duration-300"
 
-    setPosition({
-      x: (e.clientX - centerX) * 0.3,
-      y: (e.clientY - centerY) * 0.3,
-    })
-  }
+  const variantClasses = variant === 'primary'
+    ? 'text-white'
+    : `text-white border border-white/20 hover:border-white/40`
 
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 })
-    setIsHovering(false)
-  }
+  const Component = href ? motion.a : motion.button
 
   return (
-    <motion.button
-      ref={buttonRef}
-      onClick={onClick}
-      onMouseMove={handleMouseMove}
+    <Component
+      ref={buttonRef as any}
+      href={href}
       onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: 'spring', damping: 15, stiffness: 150 }}
-      className="relative px-10 py-5 rounded-full text-white font-bold text-lg overflow-hidden group"
-      style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
+      onMouseLeave={() => setIsHovering(false)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`${baseClasses} ${variantClasses}`}
+      data-cursor-hover
     >
-      {/* Liquid blob effect */}
+      {/* Background for primary */}
+      {variant === 'primary' && (
+        <motion.div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
+          animate={{
+            background: isHovering
+              ? `linear-gradient(135deg, ${BRAND.light}, ${BRAND.primary})`
+              : `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})`
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+
+      {/* Shine effect */}
       <motion.div
         className="absolute inset-0"
+        initial={{ x: '-100%', opacity: 0 }}
         animate={{
-          background: isHovering
-            ? `radial-gradient(circle at ${50 + position.x}% ${50 + position.y}%, ${BRAND.light}, ${BRAND.primary})`
-            : `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})`,
+          x: isHovering ? '100%' : '-100%',
+          opacity: isHovering ? 0.2 : 0,
+        }}
+        transition={{ duration: 0.5 }}
+        style={{
+          background: 'linear-gradient(90deg, transparent, white, transparent)',
         }}
       />
 
-      {/* Ripple effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        animate={{
-          boxShadow: isHovering
-            ? `0 0 0 10px ${BRAND.primary}20, 0 0 0 20px ${BRAND.primary}10`
-            : `0 0 0 0px ${BRAND.primary}00`,
-        }}
-        transition={{ duration: 0.3 }}
-      />
-
-      <span className="relative z-10 flex items-center gap-3">
+      <span className="relative z-10 flex items-center gap-2">
         {children}
-        <motion.svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          animate={{ x: isHovering ? 5 : 0 }}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </motion.svg>
       </span>
-    </motion.button>
+    </Component>
   )
 }
 
@@ -837,170 +564,180 @@ export default function SEOHeroUltimate() {
     offset: ['start start', 'end start'],
   })
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 500])
+  const y = useTransform(scrollYProgress, [0, 1], [0, 300])
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
-  const rotateX = useTransform(scrollYProgress, [0, 0.5], [0, 20])
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[140vh] flex items-center justify-center overflow-hidden bg-[#030308]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ background: '#0a0a0f' }}
       dir="rtl"
     >
-      {/* Custom Cursor */}
-      <MagneticCursor />
+      {/* Elegant Cursor */}
+      <ElegantCursor />
 
-      {/* Background Layers */}
-      <div className="absolute inset-0">
-        {/* WebGL Aurora */}
-        <AuroraBackground />
+      {/* Background */}
+      <PremiumBackground />
+      <ElegantParticleField />
 
-        {/* Morphing Mesh Grid */}
-        <MorphingMeshGrid />
-
-        {/* Radial gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'radial-gradient(ellipse at center, transparent 0%, #030308 70%)',
-          }}
-        />
-
-        {/* Noise texture overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
-
-        {/* Scanning line */}
-        <motion.div
-          className="absolute inset-x-0 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${BRAND.primary}, transparent)` }}
-          animate={{ y: ['0vh', '100vh'] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-        />
-      </div>
-
-      {/* Main Content */}
+      {/* Content */}
       <motion.div
-        style={{ y, opacity, scale, rotateX }}
-        className="relative z-10 max-w-7xl mx-auto px-6"
+        style={{ y, opacity }}
+        className="relative z-10 max-w-7xl mx-auto px-6 py-20"
       >
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Right Column - Text */}
           <div className="text-center lg:text-right">
-            {/* Floating badge */}
+            {/* Subtle badge */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full border mb-8"
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full mb-8"
               style={{
-                borderColor: `${BRAND.primary}40`,
-                background: `linear-gradient(135deg, ${BRAND.primary}10, transparent)`,
-                backdropFilter: 'blur(10px)',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}
             >
               <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-3 h-3 rounded-full bg-green-500"
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: BRAND.primary }}
               />
-              <span style={{ color: BRAND.light }} className="text-sm font-medium">
-                #1 סוכנות SEO בישראל • 2024
+              <span className="text-gray-400 text-sm">
+                סוכנות SEO מובילה בישראל
               </span>
             </motion.div>
 
-            {/* Main headline with RGB glitch */}
+            {/* Main headline */}
             <motion.h1
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-[1.1]"
+              transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.15] tracking-tight"
             >
               <span className="text-white">קידום אתרים</span>
               <br />
-              <RGBGlitchText>שמביא תוצאות</RGBGlitchText>
-              <br />
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="text-gray-500 text-3xl md:text-4xl"
-              >
-                לא הבטחות
-              </motion.span>
+              <span style={{ color: BRAND.primary }}>שמביא תוצאות</span>
             </motion.h1>
 
-            {/* Stats with physics animation */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex gap-10 mb-10 justify-center lg:justify-start"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-gray-400 text-lg mb-10 max-w-md mx-auto lg:mx-0"
+            >
+              אנחנו לא רק מבטיחים - אנחנו מוכיחים.
+              <span className="text-white"> תוצאות מדידות</span> שמדברות בעד עצמן.
+            </motion.p>
+
+            {/* Stats Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="flex gap-8 mb-10 justify-center lg:justify-start"
             >
               {[
-                { value: 500, suffix: '+', label: 'מילות מפתח' },
-                { value: 150, suffix: '+', label: 'לקוחות' },
-                { value: 300, suffix: '%', label: 'צמיחה' },
+                { value: 500, suffix: '+', label: 'מילות מפתח בעמוד 1' },
+                { value: 150, suffix: '+', label: 'לקוחות מרוצים' },
+                { value: 300, suffix: '%', label: 'צמיחה ממוצעת' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.7 + i * 0.1, type: 'spring' }}
-                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + i * 0.1, duration: 0.6 }}
+                  className="text-center lg:text-right"
                 >
-                  <div className="text-4xl font-black" style={{ color: BRAND.primary }}>
-                    <PhysicsCounter value={stat.value} suffix={stat.suffix} />
+                  <div className="text-3xl font-bold text-white mb-1">
+                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                   </div>
-                  <div className="text-sm text-gray-500">{stat.label}</div>
+                  <div className="text-xs text-gray-500">{stat.label}</div>
                 </motion.div>
               ))}
             </motion.div>
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <MagneticButton>
-                קבלו הצעת מחיר
-              </MagneticButton>
+              <PremiumButton variant="primary">
+                התחילו עכשיו
+                <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </PremiumButton>
 
-              <motion.a
-                href="tel:052-566-0563"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-10 py-5 border-2 rounded-full font-semibold text-lg flex items-center gap-3 justify-center"
-                style={{ borderColor: `${BRAND.primary}60`, color: BRAND.light }}
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <PremiumButton variant="outline" href="tel:052-566-0563">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 052-566-0563
-              </motion.a>
+              </PremiumButton>
             </motion.div>
           </div>
 
-          {/* Left Column - 3D Keyword Orbit */}
+          {/* Left Column - Dashboard Preview */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="hidden lg:flex items-center justify-center"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden lg:block"
           >
-            <KeywordOrbit />
+            <FloatingCard
+              delay={0.6}
+              className="rounded-2xl p-6"
+              style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: `linear-gradient(135deg, ${BRAND.primary}20, ${BRAND.light}20)` }}
+                  >
+                    <svg className="w-5 h-5" style={{ color: BRAND.primary }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">ביצועי SEO</div>
+                    <div className="text-gray-500 text-xs">30 ימים אחרונים</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-emerald-400 text-xs font-medium">+32%</span>
+                </div>
+              </div>
+
+              {/* Graph */}
+              <div className="mb-6">
+                <PerformanceGraph />
+              </div>
+
+              {/* Keywords */}
+              <div>
+                <div className="text-gray-400 text-sm mb-4">מילות מפתח מובילות</div>
+                <KeywordShowcase />
+              </div>
+            </FloatingCard>
           </motion.div>
         </div>
       </motion.div>
 
-      {/* Scroll indicator with trail */}
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1008,40 +745,30 @@ export default function SEOHeroUltimate() {
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
       >
         <motion.div
-          animate={{ y: [0, 15, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-3"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2"
         >
-          <span className="text-xs text-gray-500 uppercase tracking-widest">גלול למטה</span>
-          <div className="relative">
-            <div className="w-8 h-14 rounded-full border-2" style={{ borderColor: `${BRAND.primary}50` }}>
-              <motion.div
-                animate={{ y: [8, 28, 8] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full"
-                style={{ backgroundColor: BRAND.primary, top: '8px' }}
-              />
-            </div>
-            {/* Trail effect */}
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                style={{ backgroundColor: BRAND.primary, opacity: 0.3 - i * 0.1 }}
-                animate={{ y: [8, 28, 8] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-              />
-            ))}
+          <span className="text-gray-500 text-xs">גלול</span>
+          <div
+            className="w-6 h-10 rounded-full flex justify-center pt-2"
+            style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1 h-2 rounded-full"
+              style={{ backgroundColor: BRAND.primary }}
+            />
           </div>
         </motion.div>
       </motion.div>
 
-      {/* Global Styles */}
+      {/* Cursor style */}
       <style jsx global>{`
         .seo-page * {
           cursor: none !important;
         }
-
         @media (max-width: 768px) {
           .seo-page * {
             cursor: auto !important;
