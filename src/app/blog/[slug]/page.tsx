@@ -18,7 +18,7 @@ export async function generateStaticParams() {
   }
 }
 
-// Generate metadata for SEO
+// Generate metadata for SEO - Using Yoast SEO data from WordPress
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPostBySlug(params.slug)
 
@@ -28,12 +28,46 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
-  // Strip HTML tags for description
-  const description = post.excerpt.rendered.replace(/<[^>]*>/g, '').trim().substring(0, 160)
+  const yoast = post.yoast_head_json
+  const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url
+
+  // Fallback values if Yoast data is not available
+  const fallbackTitle = post.title.rendered.replace(/<[^>]*>/g, '')
+  const fallbackDescription = post.excerpt.rendered.replace(/<[^>]*>/g, '').trim().substring(0, 160)
 
   return {
-    title: `${post.title.rendered.replace(/<[^>]*>/g, '')} | Nadav Digital`,
-    description,
+    // Use Yoast title or fallback
+    title: yoast?.title || `${fallbackTitle} | Nadav Digital`,
+    description: yoast?.description || fallbackDescription,
+
+    // Canonical URL from Yoast
+    ...(yoast?.canonical && { alternates: { canonical: yoast.canonical } }),
+
+    // Robots directives from Yoast
+    robots: {
+      index: yoast?.robots?.index !== 'noindex',
+      follow: yoast?.robots?.follow !== 'nofollow',
+    },
+
+    // Open Graph from Yoast
+    openGraph: {
+      title: yoast?.og_title || fallbackTitle,
+      description: yoast?.og_description || fallbackDescription,
+      type: 'article',
+      images: yoast?.og_image?.map(img => ({
+        url: img.url,
+        width: img.width,
+        height: img.height,
+      })) || (featuredImage ? [{ url: featuredImage }] : []),
+    },
+
+    // Twitter Card from Yoast
+    twitter: {
+      card: (yoast?.twitter_card as 'summary' | 'summary_large_image') || 'summary_large_image',
+      title: yoast?.og_title || fallbackTitle,
+      description: yoast?.og_description || fallbackDescription,
+      images: yoast?.og_image?.[0]?.url || featuredImage,
+    },
   }
 }
 
