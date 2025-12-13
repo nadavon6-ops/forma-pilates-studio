@@ -14,9 +14,18 @@ interface WPPost {
 const icons = ['🧘', '💪', '🏃', '👶', '💼', '❤️', '🌟', '✨']
 const colors = ['bg-sage', 'bg-terracotta', 'bg-charcoal', 'bg-sage', 'bg-terracotta']
 
+// Fallback posts in case API fails
+const fallbackPosts: WPPost[] = [
+  { id: 24, slug: 'pilates-frequency', title: { rendered: 'כמה פעמים בשבוע לעשות פילאטיס?' }, excerpt: { rendered: 'מומלץ 2-3 פעמים בשבוע לתוצאות אופטימליות.' } },
+  { id: 23, slug: 'pilates-pregnancy', title: { rendered: 'פילאטיס בהריון - מדריך בטוח' }, excerpt: { rendered: 'תרגילים מותאמים לכל טרימסטר בהריון.' } },
+  { id: 22, slug: 'pilates-reformer-vs-mat', title: { rendered: 'פילאטיס על מכשירים vs מזרן' }, excerpt: { rendered: 'השוואה בין שני סוגי הפילאטיס הפופולריים.' } },
+  { id: 21, slug: 'pilates-health-benefits', title: { rendered: 'יתרונות הפילאטיס לבריאות' }, excerpt: { rendered: 'פילאטיס משפר גמישות, כוח וזקיפות.' } },
+  { id: 20, slug: 'pilates-beginners', title: { rendered: '5 תרגילי פילאטיס למתחילים' }, excerpt: { rendered: 'התחלת המסע שלך בפילאטיס עם תרגילים בסיסיים.' } },
+]
+
 export default function ServicesSection() {
-  const [posts, setPosts] = useState<WPPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const [posts, setPosts] = useState<WPPost[]>(fallbackPosts)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function fetchPosts() {
@@ -26,12 +35,12 @@ export default function ServicesSection() {
         )
         if (res.ok) {
           const data = await res.json()
-          setPosts(data)
+          if (data.length > 0) {
+            setPosts(data)
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch posts:', error)
-      } finally {
-        setLoading(false)
+        console.error('Failed to fetch posts, using fallback:', error)
       }
     }
     fetchPosts()
