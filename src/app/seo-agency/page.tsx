@@ -8,6 +8,7 @@ import SEOServices from '@/components/seo-agency/SEOServices'
 import SEOProcess from '@/components/seo-agency/SEOProcess'
 import SEOResults from '@/components/seo-agency/SEOResults'
 import SEOClients from '@/components/seo-agency/SEOClients'
+import SEOBlog from '@/components/seo-agency/SEOBlog'
 import SEOCTA from '@/components/seo-agency/SEOCTA'
 import SEOFooter from '@/components/seo-agency/SEOFooter'
 
@@ -34,6 +35,7 @@ export default function SEOAgencyPage() {
         <SEOProcess />
         <SEOResults />
         <SEOClients />
+        <SEOBlog />
         <SEOCTA />
       </main>
       <SEOFooter />
