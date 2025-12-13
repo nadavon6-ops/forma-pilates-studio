@@ -1,0 +1,40 @@
+'use client'
+
+import { useEffect } from 'react'
+import SEONavigation from '@/components/seo-agency/SEONavigation'
+import SEOHero from '@/components/seo-agency/SEOHero'
+import SEOStats from '@/components/seo-agency/SEOStats'
+import SEOServices from '@/components/seo-agency/SEOServices'
+import SEOProcess from '@/components/seo-agency/SEOProcess'
+import SEOResults from '@/components/seo-agency/SEOResults'
+import SEOClients from '@/components/seo-agency/SEOClients'
+import SEOCTA from '@/components/seo-agency/SEOCTA'
+import SEOFooter from '@/components/seo-agency/SEOFooter'
+
+export default function SEOAgencyPage() {
+  useEffect(() => {
+    document.body.classList.add('seo-theme')
+    document.body.style.backgroundColor = '#0a0a0a'
+
+    return () => {
+      document.body.classList.remove('seo-theme')
+      document.body.style.backgroundColor = ''
+    }
+  }, [])
+
+  return (
+    <div className="seo-page bg-[#0a0a0a] min-h-screen overflow-x-hidden" dir="rtl">
+      <SEONavigation />
+      <main>
+        <SEOHero />
+        <SEOStats />
+        <SEOServices />
+        <SEOProcess />
+        <SEOResults />
+        <SEOClients />
+        <SEOCTA />
+      </main>
+      <SEOFooter />
+    </div>
+  )
+}
