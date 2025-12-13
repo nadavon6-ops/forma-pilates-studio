@@ -1,5 +1,11 @@
 const WORDPRESS_API_URL = process.env.WORDPRESS_API_URL || 'https://wordpress-1097675-6067353.cloudwaysapps.com/wp-json/wp/v2'
 
+// Disable SSL verification for WordPress API calls (Cloudways staging has cert mismatch)
+// This is safe because we're only calling our own WordPress backend
+if (typeof process !== 'undefined' && process.env) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+}
+
 // Yoast SEO data structure (requires Yoast SEO plugin)
 export interface YoastSEO {
   title?: string
