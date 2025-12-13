@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react'
 import CyberNavigation from '@/components/cyber/CyberNavigation'
-import CyberHero from '@/components/cyber/CyberHero'
-import CyberServices from '@/components/cyber/CyberServices'
-import CyberStats from '@/components/cyber/CyberStats'
+import CyberHeroUltimate from '@/components/cyber/CyberHeroUltimate'
+import CyberStatsUltimate from '@/components/cyber/CyberStatsUltimate'
+import CyberServicesUltimate from '@/components/cyber/CyberServicesUltimate'
 import CyberWhyUs from '@/components/cyber/CyberWhyUs'
 import CyberTech from '@/components/cyber/CyberTech'
 import CyberTestimonials from '@/components/cyber/CyberTestimonials'
@@ -15,8 +15,11 @@ export default function CyberPage() {
   useEffect(() => {
     // Add cyber theme class to body
     document.body.classList.add('cyber-theme')
+    document.body.style.cursor = 'none'
+
     return () => {
       document.body.classList.remove('cyber-theme')
+      document.body.style.cursor = 'auto'
     }
   }, [])
 
@@ -24,9 +27,9 @@ export default function CyberPage() {
     <div className="cyber-page bg-black min-h-screen overflow-x-hidden">
       <CyberNavigation />
       <main>
-        <CyberHero />
-        <CyberStats />
-        <CyberServices />
+        <CyberHeroUltimate />
+        <CyberStatsUltimate />
+        <CyberServicesUltimate />
         <CyberWhyUs />
         <CyberTech />
         <CyberTestimonials />
