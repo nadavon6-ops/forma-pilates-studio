@@ -1,5 +1,9 @@
 import { Metadata } from 'next'
 import { getPageBySlug } from '@/lib/wordpress'
+
+// Force fresh content on every request
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 import VideoHero from '@/components/forma-advanced/VideoHero'
 import ImageRevealSection from '@/components/forma-advanced/ImageRevealSection'
 import InfiniteCarousel from '@/components/forma-advanced/InfiniteCarousel'
