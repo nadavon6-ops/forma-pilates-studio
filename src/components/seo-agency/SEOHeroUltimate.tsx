@@ -12,7 +12,7 @@ const BRAND = {
 }
 
 // ============================================
-// WEBGL PARTICLE SYSTEM - SEO Data Flow
+// WEBGL PARTICLE SYSTEM - Advanced 3D Particles (Cyber-level)
 // ============================================
 function DataFlowParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -20,7 +20,7 @@ function DataFlowParticles() {
   const particlesRef = useRef<Array<{
     x: number; y: number; z: number;
     vx: number; vy: number; vz: number;
-    size: number; hue: number; life: number;
+    size: number; color: string; life: number;
   }>>([])
 
   useEffect(() => {
@@ -37,8 +37,8 @@ function DataFlowParticles() {
     resize()
     window.addEventListener('resize', resize)
 
-    // Initialize particles with brand colors
-    const particleCount = 150
+    // Initialize particles - more particles for richer effect
+    const particleCount = 200
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push({
         x: Math.random() * canvas.width,
@@ -48,7 +48,7 @@ function DataFlowParticles() {
         vy: (Math.random() - 0.5) * 2,
         vz: (Math.random() - 0.5) * 5,
         size: Math.random() * 3 + 1,
-        hue: 195 + Math.random() * 20, // Blue hues matching brand
+        color: `hsl(${195 + Math.random() * 20}, 100%, ${50 + Math.random() * 30}%)`,
         life: Math.random(),
       })
     }
@@ -61,19 +61,19 @@ function DataFlowParticles() {
     let animationId: number
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)'
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       particlesRef.current.forEach((particle, i) => {
-        // Mouse interaction
+        // Mouse interaction - particles are attracted/repelled
         const dx = mouseRef.current.x - particle.x
         const dy = mouseRef.current.y - particle.y
         const dist = Math.sqrt(dx * dx + dy * dy)
 
         if (dist < 200) {
           const force = (200 - dist) / 200
-          particle.vx -= (dx / dist) * force * 0.3
-          particle.vy -= (dy / dist) * force * 0.3
+          particle.vx -= (dx / dist) * force * 0.5
+          particle.vy -= (dy / dist) * force * 0.5
         }
 
         // Update position
@@ -101,19 +101,19 @@ function DataFlowParticles() {
 
         ctx.beginPath()
         const gradient = ctx.createRadialGradient(projX, projY, 0, projX, projY, size * 3)
-        gradient.addColorStop(0, `hsla(${particle.hue}, 90%, 60%, ${alpha})`)
+        gradient.addColorStop(0, particle.color.replace(')', `, ${alpha})`).replace('hsl', 'hsla'))
         gradient.addColorStop(1, 'rgba(4, 133, 178, 0)')
         ctx.fillStyle = gradient
         ctx.arc(projX, projY, size * 3, 0, Math.PI * 2)
         ctx.fill()
 
-        // Core
+        // Core - brighter white center
         ctx.beginPath()
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`
         ctx.arc(projX, projY, size * 0.5, 0, Math.PI * 2)
         ctx.fill()
 
-        // Draw connections
+        // Draw connections between nearby particles
         particlesRef.current.slice(i + 1).forEach(other => {
           const otherScale = perspective / (perspective + other.z)
           const otherProjX = canvas.width / 2 + (other.x - canvas.width / 2) * otherScale
@@ -123,9 +123,9 @@ function DataFlowParticles() {
             Math.pow(projX - otherProjX, 2) + Math.pow(projY - otherProjY, 2)
           )
 
-          if (lineDist < 120) {
+          if (lineDist < 100) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(4, 133, 178, ${(1 - lineDist / 120) * 0.4})`
+            ctx.strokeStyle = `rgba(4, 133, 178, ${(1 - lineDist / 100) * 0.3})`
             ctx.lineWidth = 0.5
             ctx.moveTo(projX, projY)
             ctx.lineTo(otherProjX, otherProjY)
@@ -385,7 +385,7 @@ function SEOGlobe() {
 }
 
 // ============================================
-// DATA RAIN - SEO Keywords & Metrics
+// ADVANCED DATA RAIN - SEO Matrix with Depth & Interaction (Cyber-level)
 // ============================================
 function SEODataRain() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -401,35 +401,32 @@ function SEODataRain() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
-    const seoTerms = [
-      'SEO', 'קידום', 'GOOGLE', 'RANK', '#1', 'CTR', 'DA', 'PA',
-      'SERP', 'LINK', 'META', 'H1', 'ALT', 'SSL', 'AMP', 'CWV',
-      'ROI', '+500%', 'TOP10', 'INDEX', 'CRAWL', 'ORGANIC',
-      'קישור', 'תוכן', 'מילה', 'חיפוש', 'דירוג', 'תנועה'
-    ]
+    // Mix of SEO terms, Hebrew, and matrix-style characters
+    const chars = 'SEOGOOGLERANKאבגדהוזחטיכלמנסעפצקרשת0123456789#1@%↑★✓▲●◆'
+    const charArray = chars.split('')
 
     interface Column {
       x: number
       y: number
       speed: number
-      terms: string[]
+      chars: string[]
       fontSize: number
       depth: number
     }
 
     const columns: Column[] = []
-    const columnCount = Math.floor(canvas.width / 50)
+    const columnCount = Math.floor(canvas.width / 20)
 
     for (let i = 0; i < columnCount; i++) {
       const depth = Math.random()
       columns.push({
-        x: i * 50 + Math.random() * 20,
+        x: i * 20 + Math.random() * 10,
         y: Math.random() * -canvas.height,
-        speed: 1 + Math.random() * 2 + depth * 2,
-        terms: Array.from({ length: 15 + Math.floor(Math.random() * 10) }, () =>
-          seoTerms[Math.floor(Math.random() * seoTerms.length)]
+        speed: 2 + Math.random() * 4 + depth * 3,
+        chars: Array.from({ length: 20 + Math.floor(Math.random() * 20) }, () =>
+          charArray[Math.floor(Math.random() * charArray.length)]
         ),
-        fontSize: 12 + depth * 6,
+        fontSize: 10 + depth * 8,
         depth
       })
     }
@@ -444,43 +441,39 @@ function SEODataRain() {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       columns.forEach(column => {
-        // Mouse repulsion
+        // Mouse repulsion - stronger effect
         const dx = mouseRef.current.x - column.x
         const dy = mouseRef.current.y - column.y
         const dist = Math.sqrt(dx * dx + dy * dy)
         let offset = 0
         if (dist < 150) {
-          offset = (150 - dist) * 0.2 * (dx > 0 ? -1 : 1)
+          offset = (150 - dist) * 0.3 * (dx > 0 ? -1 : 1)
         }
 
-        column.terms.forEach((term, i) => {
-          const y = column.y + i * (column.fontSize + 5)
+        column.chars.forEach((char, i) => {
+          const y = column.y + i * column.fontSize
           if (y > 0 && y < canvas.height) {
-            const alpha = 1 - i / column.terms.length
+            const alpha = 1 - i / column.chars.length
+            const brightness = i === 0 ? 255 : 100 + column.depth * 100
 
             ctx.font = `${column.fontSize}px 'Courier New', monospace`
+            ctx.fillStyle = i === 0
+              ? '#fff'
+              : `rgba(4, ${brightness}, ${brightness + 50}, ${alpha * (0.3 + column.depth * 0.5)})`
 
-            // First item is brightest
-            if (i === 0) {
-              ctx.fillStyle = '#fff'
-            } else {
-              const brightness = 0.3 + column.depth * 0.4
-              ctx.fillStyle = `rgba(4, 133, 178, ${alpha * brightness})`
-            }
+            ctx.fillText(char, column.x + offset, y)
 
-            ctx.fillText(term, column.x + offset, y)
-
-            // Randomly change terms
-            if (Math.random() < 0.01) {
-              column.terms[i] = seoTerms[Math.floor(Math.random() * seoTerms.length)]
+            // Randomly change characters
+            if (Math.random() < 0.02) {
+              column.chars[i] = charArray[Math.floor(Math.random() * charArray.length)]
             }
           }
         })
 
         column.y += column.speed
 
-        if (column.y > canvas.height + column.terms.length * column.fontSize) {
-          column.y = -column.terms.length * column.fontSize
+        if (column.y > canvas.height + column.chars.length * column.fontSize) {
+          column.y = -column.chars.length * column.fontSize
           column.x = Math.random() * canvas.width
         }
       })
@@ -505,7 +498,7 @@ function SEODataRain() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 opacity-25"
+      className="absolute inset-0 opacity-30"
       style={{ mixBlendMode: 'screen' }}
     />
   )
@@ -926,27 +919,27 @@ export default function SEOHeroUltimate() {
       {/* Custom Cursor */}
       <SEOCursor />
 
-      {/* Background Layers */}
+      {/* Background Layers - Cyber-level intensity */}
       <div className="absolute inset-0">
         {/* Base gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
 
-        {/* Liquid blob */}
+        {/* Liquid blob - larger and more visible */}
         <LiquidBlob />
 
-        {/* SEO Data Rain */}
+        {/* Advanced Matrix Rain */}
         <SEODataRain />
 
-        {/* Data Flow Particles */}
+        {/* WebGL Particles - 3D effect */}
         <DataFlowParticles />
 
-        {/* Grid with perspective */}
+        {/* Grid with perspective - more visible */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-30"
           style={{
             backgroundImage: `
-              linear-gradient(${BRAND.primary}25 1px, transparent 1px),
-              linear-gradient(90deg, ${BRAND.primary}25 1px, transparent 1px)
+              linear-gradient(rgba(4, 133, 178, 0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(4, 133, 178, 0.15) 1px, transparent 1px)
             `,
             backgroundSize: '60px 60px',
             transform: 'perspective(500px) rotateX(60deg) translateY(-30%)',
@@ -954,14 +947,14 @@ export default function SEOHeroUltimate() {
           }}
         />
 
-        {/* Scanning lines */}
+        {/* Scanning lines - more prominent */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute inset-x-0 h-px animate-scan opacity-40" style={{ background: `linear-gradient(to right, transparent, ${BRAND.primary}, transparent)` }} />
-          <div className="absolute inset-x-0 h-px animate-scan-reverse opacity-25" style={{ background: `linear-gradient(to right, transparent, ${BRAND.light}, transparent)` }} />
+          <div className="absolute inset-x-0 h-px animate-scan opacity-50" style={{ background: `linear-gradient(to right, transparent, ${BRAND.primary}, transparent)` }} />
+          <div className="absolute inset-x-0 h-px animate-scan-reverse opacity-30" style={{ background: `linear-gradient(to right, transparent, ${BRAND.light}, transparent)` }} />
         </div>
 
         {/* Vignette */}
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.6) 100%)' }} />
+        <div className="absolute inset-0 bg-radial-vignette" />
       </div>
 
       {/* Main Content */}
@@ -1233,6 +1226,10 @@ export default function SEOHeroUltimate() {
 
         .animate-scan-reverse {
           animation: scan-reverse 12s linear infinite;
+        }
+
+        .bg-radial-vignette {
+          background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%);
         }
 
         .seo-page * {
