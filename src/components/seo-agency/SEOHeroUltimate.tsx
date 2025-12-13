@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 // Brand colors
 const BRAND = {
@@ -731,7 +731,7 @@ function SEOCursor() {
 // ============================================
 // GLITCH TEXT
 // ============================================
-function GlitchText({ children, className = '' }: { children: string; className?: string }) {
+function GlitchText({ children, className = '', style }: { children: string; className?: string; style?: React.CSSProperties }) {
   const [glitchActive, setGlitchActive] = useState(false)
 
   useEffect(() => {
@@ -743,7 +743,7 @@ function GlitchText({ children, className = '' }: { children: string; className?
   }, [])
 
   return (
-    <span className={`relative inline-block ${className}`}>
+    <span className={`relative inline-block ${className}`} style={style}>
       <span className="relative z-10">{children}</span>
       <span
         className={`absolute top-0 left-0 opacity-80 ${glitchActive ? 'animate-glitch-1' : ''}`}
