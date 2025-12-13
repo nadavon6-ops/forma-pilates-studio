@@ -5,7 +5,9 @@ import Link from 'next/link'
 import Navigation from '@/components/forma/Navigation'
 import Footer from '@/components/forma/Footer'
 
+// Force revalidation
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
   try {
