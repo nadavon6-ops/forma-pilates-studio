@@ -16,11 +16,11 @@ const colors = ['bg-sage', 'bg-terracotta', 'bg-charcoal', 'bg-sage', 'bg-terrac
 
 // Fallback posts
 const fallbackPosts: WPPost[] = [
-  { id: 24, slug: 'pilates-frequency', title: { rendered: 'כמה פעמים בשבוע לעשות פילאטיס?' }, excerpt: { rendered: 'מומלץ 2-3 פעמים בשבוע לתוצאות אופטימליות.' } },
-  { id: 23, slug: 'pilates-pregnancy', title: { rendered: 'פילאטיס בהריון - מדריך בטוח' }, excerpt: { rendered: 'תרגילים מותאמים לכל טרימסטר בהריון.' } },
-  { id: 22, slug: 'pilates-reformer-vs-mat', title: { rendered: 'פילאטיס על מכשירים vs מזרן' }, excerpt: { rendered: 'השוואה בין שני סוגי הפילאטיס הפופולריים.' } },
-  { id: 21, slug: 'pilates-health-benefits', title: { rendered: 'יתרונות הפילאטיס לבריאות' }, excerpt: { rendered: 'פילאטיס משפר גמישות, כוח וזקיפות.' } },
-  { id: 20, slug: 'pilates-beginners', title: { rendered: '5 תרגילי פילאטיס למתחילים' }, excerpt: { rendered: 'התחלת המסע שלך בפילאטיס עם תרגילים בסיסיים.' } },
+  { id: 24, slug: 'pilates-frequency', title: { rendered: 'כמה פעמים בשבוע לעשות פילאטיס?' }, excerpt: { rendered: 'המדריך המלא לתדירות אימונים - המלצות למתחילים, מתקדמים ולפי יעדים אישיים.' } },
+  { id: 23, slug: 'pilates-pregnancy', title: { rendered: 'פילאטיס בהריון - המדריך הבטוח' }, excerpt: { rendered: 'כל מה שצריך לדעת על אימוני פילאטיס בהריון - תרגילים מותאמים לכל טרימסטר.' } },
+  { id: 22, slug: 'pilates-reformer-vs-mat', title: { rendered: 'פילאטיס מכשירים או מזרן?' }, excerpt: { rendered: 'השוואה מקיפה בין שני סוגי הפילאטיס - יתרונות, חסרונות ומה מתאים לכם.' } },
+  { id: 21, slug: 'pilates-health-benefits', title: { rendered: 'יתרונות הפילאטיס לבריאות' }, excerpt: { rendered: 'מה המדע אומר? יתרונות מוכחים לגמישות, כוח, יציבה והקלה על כאבי גב.' } },
+  { id: 20, slug: 'pilates-beginners', title: { rendered: '5 תרגילי פילאטיס למתחילים' }, excerpt: { rendered: 'המדריך המלא למתחילים - 5 תרגילים בסיסיים עם הסברים מפורטים וטיפים.' } },
 ]
 
 export default function ServicesSection() {
