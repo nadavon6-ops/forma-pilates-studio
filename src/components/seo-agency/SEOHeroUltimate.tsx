@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useAnimationFrame } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
 
 // Premium brand colors - elegant palette
 const BRAND = {
@@ -270,11 +270,13 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }: { value: number; s
 function FloatingCard({
   children,
   delay = 0,
-  className = ''
+  className = '',
+  style = {}
 }: {
   children: React.ReactNode
   delay?: number
   className?: string
+  style?: React.CSSProperties
 }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
@@ -298,6 +300,7 @@ function FloatingCard({
       onMouseLeave={() => setMousePos({ x: 0.5, y: 0.5 })}
       className={`relative overflow-hidden ${className}`}
       style={{
+        ...style,
         transform: `perspective(1000px) rotateX(${(mousePos.y - 0.5) * -5}deg) rotateY(${(mousePos.x - 0.5) * 5}deg)`,
         transition: 'transform 0.3s ease-out',
       }}
