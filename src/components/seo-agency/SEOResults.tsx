@@ -3,6 +3,14 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 // ============================================
 // CASE STUDY CHART
 // ============================================
@@ -89,7 +97,7 @@ const caseStudies = [
     },
     chartData: [2500, 3200, 4800, 7200, 9500, 12000, 15000],
     testimonial: 'התוצאות עברו את כל הציפיות. תוך 6 חודשים הגענו לעמוד הראשון על מילות המפתח המרכזיות.',
-    color: '#10b981',
+    color: BRAND.primary,
   },
   {
     client: 'רשת קמעונאות',
@@ -101,7 +109,7 @@ const caseStudies = [
     },
     chartData: [8000, 12000, 18000, 25000, 32000, 38000, 42000],
     testimonial: 'המכירות האורגניות עלו ב-400% ואנחנו ממשיכים לצמוח.',
-    color: '#3b82f6',
+    color: BRAND.light,
   },
   {
     client: 'חברת נדל"ן',
@@ -113,7 +121,7 @@ const caseStudies = [
     },
     chartData: [1200, 2100, 3500, 5200, 6800, 7800, 8500],
     testimonial: 'הפכנו למובילים בתחום באזור שלנו בזכות הקידום המקצועי.',
-    color: '#8b5cf6',
+    color: BRAND.dark,
   },
 ]
 
@@ -121,10 +129,13 @@ export default function SEOResults() {
   const [activeCase, setActiveCase] = useState(0)
 
   return (
-    <section id="results" className="relative py-32 overflow-hidden bg-gradient-to-b from-[#0a0a0a] to-[#0f1a14]">
+    <section id="results" className="relative py-32 overflow-hidden bg-gradient-to-b from-[#0a0a0a] to-[#0a1015]">
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px]" />
+        <div
+          className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[150px]"
+          style={{ backgroundColor: `${BRAND.primary}08` }}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6">
@@ -135,11 +146,18 @@ export default function SEOResults() {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="inline-block px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
+          <span
+            className="inline-block px-4 py-2 rounded-full border text-sm font-medium mb-6"
+            style={{
+              borderColor: `${BRAND.primary}50`,
+              backgroundColor: `${BRAND.primary}15`,
+              color: BRAND.light
+            }}
+          >
             תוצאות אמיתיות
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6">
-            הצלחות <span className="text-emerald-400">הלקוחות שלנו</span>
+            הצלחות <span style={{ color: BRAND.primary }}>הלקוחות שלנו</span>
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             לא מבטיחים - מביאים. הנה כמה דוגמאות לתוצאות שהשגנו.
@@ -154,11 +172,11 @@ export default function SEOResults() {
               onClick={() => setActiveCase(index)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-6 py-3 rounded-full font-medium transition-all ${
-                activeCase === index
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
+              className="px-6 py-3 rounded-full font-medium transition-all"
+              style={{
+                backgroundColor: activeCase === index ? BRAND.primary : '#1f2937',
+                color: activeCase === index ? 'white' : '#9ca3af',
+              }}
             >
               {study.industry}
             </motion.button>
@@ -204,7 +222,7 @@ export default function SEOResults() {
                     </div>
                     <div className="flex items-center justify-center gap-2 text-xs">
                       <span className="text-gray-600">{value.before.toLocaleString()}</span>
-                      <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4" style={{ color: BRAND.primary }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                       <span className="text-white font-bold">{value.after.toLocaleString()}</span>
@@ -227,7 +245,8 @@ export default function SEOResults() {
             <div className="flex flex-col justify-center">
               <div className="relative">
                 <svg
-                  className="absolute -top-4 -right-4 w-16 h-16 text-emerald-500/20"
+                  className="absolute -top-4 -right-4 w-16 h-16"
+                  style={{ color: `${BRAND.primary}30` }}
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -237,7 +256,10 @@ export default function SEOResults() {
                   "{caseStudies[activeCase].testimonial}"
                 </blockquote>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white font-bold">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
+                    style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
+                  >
                     {caseStudies[activeCase].client.charAt(0)}
                   </div>
                   <div>
@@ -251,7 +273,8 @@ export default function SEOResults() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-8 w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600"
+                className="mt-8 w-full py-4 rounded-xl font-bold text-white"
+                style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
               >
                 רוצים תוצאות דומות? דברו איתנו
               </motion.button>

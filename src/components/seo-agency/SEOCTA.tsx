@@ -3,6 +3,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 // ============================================
 // ANIMATED BACKGROUND
 // ============================================
@@ -56,7 +64,7 @@ function AnimatedBackground() {
 
           if (dist < 150) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(16, 185, 129, ${(1 - dist / 150) * 0.2})`
+            ctx.strokeStyle = `rgba(4, 133, 178, ${(1 - dist / 150) * 0.2})`
             ctx.lineWidth = 1
             ctx.moveTo(p.x, p.y)
             ctx.lineTo(other.x, other.y)
@@ -65,7 +73,7 @@ function AnimatedBackground() {
         })
 
         ctx.beginPath()
-        ctx.fillStyle = '#10b981'
+        ctx.fillStyle = BRAND.primary
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
         ctx.fill()
       })
@@ -112,7 +120,10 @@ export default function SEOCTA() {
       <AnimatedBackground />
 
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 rounded-full blur-[150px]" />
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[150px]"
+          style={{ backgroundColor: `${BRAND.primary}15` }}
+        />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-6">
@@ -130,14 +141,15 @@ export default function SEOCTA() {
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
-                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center"
+                  className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
                 >
                   <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </motion.div>
                 <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-                  בואו <span className="text-emerald-400">נדבר</span>
+                  בואו <span style={{ color: BRAND.primary }}>נדבר</span>
                 </h2>
                 <p className="text-gray-400 text-lg">
                   השאירו פרטים ונחזור אליכם תוך 24 שעות עם הצעה מותאמת אישית
@@ -154,7 +166,7 @@ export default function SEOCTA() {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none transition-colors"
+                      className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-[#0485b2] focus:outline-none transition-colors"
                       placeholder="הכנס את שמך"
                     />
                   </div>
@@ -165,7 +177,7 @@ export default function SEOCTA() {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none transition-colors"
+                      className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-[#0485b2] focus:outline-none transition-colors"
                       placeholder="050-000-0000"
                     />
                   </div>
@@ -177,7 +189,7 @@ export default function SEOCTA() {
                     type="url"
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full px-5 py-4 rounded-xl bg-black/50 border border-gray-800 text-white placeholder-gray-600 focus:border-[#0485b2] focus:outline-none transition-colors"
                     placeholder="https://example.com"
                   />
                 </div>
@@ -187,7 +199,8 @@ export default function SEOCTA() {
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-5 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-5 rounded-xl font-bold text-lg text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
@@ -210,7 +223,13 @@ export default function SEOCTA() {
               {/* Contact Info */}
               <div className="mt-10 pt-10 border-t border-gray-800 grid md:grid-cols-2 gap-6">
                 <a href="tel:052-566-0563" className="flex items-center gap-4 p-4 rounded-xl bg-black/30 hover:bg-black/50 transition-colors group">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-colors"
+                    style={{
+                      backgroundColor: `${BRAND.primary}15`,
+                      color: BRAND.primary
+                    }}
+                  >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
@@ -222,7 +241,13 @@ export default function SEOCTA() {
                 </a>
 
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-black/30">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                    style={{
+                      backgroundColor: `${BRAND.primary}15`,
+                      color: BRAND.primary
+                    }}
+                  >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -246,7 +271,8 @@ export default function SEOCTA() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: 'spring' }}
-                className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center"
+                className="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
               >
                 <svg className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -258,7 +284,11 @@ export default function SEOCTA() {
               </p>
               <button
                 onClick={() => setIsSubmitted(false)}
-                className="px-8 py-3 rounded-full border border-emerald-500 text-emerald-400 font-medium hover:bg-emerald-500/10 transition-colors"
+                className="px-8 py-3 rounded-full border font-medium transition-colors"
+                style={{
+                  borderColor: BRAND.primary,
+                  color: BRAND.primary
+                }}
               >
                 שלח עוד פנייה
               </button>

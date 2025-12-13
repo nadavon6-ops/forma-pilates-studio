@@ -3,6 +3,14 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useInView, useSpring, useTransform } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 // ============================================
 // ANIMATED COUNTER
 // ============================================
@@ -59,14 +67,15 @@ function LiveMetricsTicker() {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="bg-black/50 backdrop-blur-xl rounded-2xl border border-emerald-500/20 p-6"
+      className="bg-black/50 backdrop-blur-xl rounded-2xl border border-[#0485b2]/30 p-6"
+      style={{ boxShadow: `0 0 30px ${BRAND.glow}` }}
     >
       <div className="flex items-center gap-2 mb-4">
         <span className="relative flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: BRAND.light }} />
+          <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: BRAND.primary }} />
         </span>
-        <span className="text-green-400 text-sm font-medium">נתונים בזמן אמת</span>
+        <span className="text-sm font-medium" style={{ color: BRAND.light }}>נתונים בזמן אמת</span>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -77,7 +86,7 @@ function LiveMetricsTicker() {
           <div className="text-xs text-gray-500">חשיפות היום</div>
         </div>
         <div className="text-center border-x border-gray-800">
-          <div className="text-2xl font-bold text-emerald-400 font-mono">
+          <div className="text-2xl font-bold font-mono" style={{ color: BRAND.primary }}>
             {metrics.clicks.toLocaleString()}
           </div>
           <div className="text-xs text-gray-500">קליקים</div>
@@ -107,7 +116,7 @@ const stats = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
       </svg>
     ),
-    color: '#10b981',
+    color: BRAND.primary,
   },
   {
     value: 150,
@@ -119,7 +128,7 @@ const stats = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
-    color: '#34d399',
+    color: BRAND.light,
   },
   {
     value: 300,
@@ -131,7 +140,7 @@ const stats = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
       </svg>
     ),
-    color: '#6ee7b7',
+    color: BRAND.primary,
   },
   {
     value: 20,
@@ -143,7 +152,7 @@ const stats = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     ),
-    color: '#a7f3d0',
+    color: BRAND.light,
   },
 ]
 
@@ -158,11 +167,11 @@ export default function SEOStats() {
         <div
           className="absolute inset-0 opacity-5"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(16, 185, 129, 0.5) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, ${BRAND.primary}80 1px, transparent 0)`,
             backgroundSize: '40px 40px',
           }}
         />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: `${BRAND.primary}08` }} />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6">
@@ -173,11 +182,18 @@ export default function SEOStats() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
+          <span
+            className="inline-block px-4 py-2 rounded-full border text-sm font-medium mb-6"
+            style={{
+              borderColor: `${BRAND.primary}50`,
+              backgroundColor: `${BRAND.primary}15`,
+              color: BRAND.light
+            }}
+          >
             המספרים מדברים
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            תוצאות <span className="text-emerald-400">מוכחות</span>
+            תוצאות <span style={{ color: BRAND.primary }}>מוכחות</span>
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             אנחנו לא מבטיחים - אנחנו מביאים תוצאות. הנה המספרים שמוכיחים את זה.
@@ -196,16 +212,13 @@ export default function SEOStats() {
               className="group"
             >
               <div
-                className="relative h-full p-6 rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-emerald-500/50"
-                style={{
-                  boxShadow: `0 0 0 rgba(${stat.color === '#10b981' ? '16, 185, 129' : '52, 211, 153'}, 0)`,
-                }}
+                className="relative h-full p-6 rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-[#0485b2]/50"
               >
                 {/* Hover glow */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: `radial-gradient(circle at center, ${stat.color}10, transparent 70%)`,
+                    background: `radial-gradient(circle at center, ${stat.color}15, transparent 70%)`,
                   }}
                 />
 

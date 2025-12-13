@@ -3,6 +3,14 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 const steps = [
   {
     number: '01',
@@ -79,7 +87,10 @@ export default function SEOProcess() {
     >
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px]" />
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] rounded-full blur-[150px]"
+          style={{ backgroundColor: `${BRAND.primary}08` }}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6">
@@ -90,11 +101,18 @@ export default function SEOProcess() {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <span className="inline-block px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
+          <span
+            className="inline-block px-4 py-2 rounded-full border text-sm font-medium mb-6"
+            style={{
+              borderColor: `${BRAND.primary}50`,
+              backgroundColor: `${BRAND.primary}15`,
+              color: BRAND.light
+            }}
+          >
             תהליך העבודה
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6">
-            איך אנחנו <span className="text-emerald-400">עובדים</span>
+            איך אנחנו <span style={{ color: BRAND.primary }}>עובדים</span>
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             תהליך עבודה מובנה ושקוף שמבטיח תוצאות
@@ -106,8 +124,11 @@ export default function SEOProcess() {
           {/* Vertical line */}
           <div className="absolute right-1/2 top-0 bottom-0 w-px bg-gray-800 hidden lg:block">
             <motion.div
-              className="absolute top-0 right-0 w-full bg-gradient-to-b from-emerald-500 to-green-500"
-              style={{ height: lineProgress }}
+              className="absolute top-0 right-0 w-full"
+              style={{
+                height: lineProgress,
+                background: `linear-gradient(to bottom, ${BRAND.primary}, ${BRAND.light})`
+              }}
             />
           </div>
 
@@ -126,13 +147,21 @@ export default function SEOProcess() {
               >
                 {/* Content */}
                 <div className={`flex-1 ${index % 2 === 0 ? 'lg:text-left lg:pr-16' : 'lg:text-right lg:pl-16'}`}>
-                  <div className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-gray-800 rounded-3xl p-8 hover:border-emerald-500/30 transition-colors">
+                  <div
+                    className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-gray-800 rounded-3xl p-8 transition-colors hover:border-[#0485b2]/30"
+                  >
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{
+                          backgroundColor: `${BRAND.primary}15`,
+                          color: BRAND.primary
+                        }}
+                      >
                         {step.icon}
                       </div>
                       <div>
-                        <span className="text-emerald-400 font-bold text-lg">{step.number}</span>
+                        <span className="font-bold text-lg" style={{ color: BRAND.primary }}>{step.number}</span>
                         <span className="text-gray-600 text-sm mr-2">/ {step.duration}</span>
                       </div>
                     </div>
@@ -142,8 +171,11 @@ export default function SEOProcess() {
                 </div>
 
                 {/* Center dot */}
-                <div className="hidden lg:flex items-center justify-center w-16 h-16 rounded-full bg-black border-4 border-emerald-500 z-10">
-                  <span className="text-emerald-400 font-bold">{step.number}</span>
+                <div
+                  className="hidden lg:flex items-center justify-center w-16 h-16 rounded-full bg-black z-10"
+                  style={{ border: `4px solid ${BRAND.primary}` }}
+                >
+                  <span className="font-bold" style={{ color: BRAND.primary }}>{step.number}</span>
                 </div>
 
                 {/* Empty space for alignment */}
@@ -160,12 +192,18 @@ export default function SEOProcess() {
           viewport={{ once: true }}
           className="mt-24 text-center"
         >
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30">
-            <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div
+            className="inline-flex items-center gap-4 px-8 py-4 rounded-full border"
+            style={{
+              background: `linear-gradient(135deg, ${BRAND.primary}15, ${BRAND.light}10)`,
+              borderColor: `${BRAND.primary}50`
+            }}
+          >
+            <svg className="w-6 h-6" style={{ color: BRAND.primary }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
             <span className="text-white font-medium">
-              תוצאות ראשונות תוך <span className="text-emerald-400 font-bold">3-6 חודשים</span>
+              תוצאות ראשונות תוך <span className="font-bold" style={{ color: BRAND.primary }}>3-6 חודשים</span>
             </span>
           </div>
         </motion.div>

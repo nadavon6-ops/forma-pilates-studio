@@ -2,6 +2,14 @@
 
 import { motion } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 const clients = [
   { name: 'בנק לאומי', industry: 'פיננסים' },
   { name: 'כללית', industry: 'בריאות' },
@@ -21,7 +29,7 @@ export default function SEOClients() {
         <div
           className="absolute inset-0 opacity-5"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(16, 185, 129, 0.3) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, ${BRAND.primary}50 1px, transparent 0)`,
             backgroundSize: '50px 50px',
           }}
         />
@@ -35,11 +43,18 @@ export default function SEOClients() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
+          <span
+            className="inline-block px-4 py-2 rounded-full border text-sm font-medium mb-6"
+            style={{
+              borderColor: `${BRAND.primary}50`,
+              backgroundColor: `${BRAND.primary}15`,
+              color: BRAND.light
+            }}
+          >
             הלקוחות שלנו
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            חברות שסומכות <span className="text-emerald-400">עלינו</span>
+            חברות שסומכות <span style={{ color: BRAND.primary }}>עלינו</span>
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             כל הלקוחות שלנו מגיעים דרך המלצות. זו ההוכחה הטובה ביותר לאיכות העבודה שלנו.
@@ -55,11 +70,17 @@ export default function SEOClients() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.5)' }}
+              whileHover={{ scale: 1.05, borderColor: `${BRAND.primary}80` }}
               className="relative p-8 rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-black/50 text-center transition-all cursor-default group"
             >
               {/* Placeholder for logo - using initials */}
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-2xl font-bold text-emerald-400 group-hover:from-emerald-500/20 group-hover:to-green-500/10 transition-all">
+              <div
+                className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center text-2xl font-bold transition-all"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.primary}20, ${BRAND.dark}10)`,
+                  color: BRAND.primary
+                }}
+              >
                 {client.name.charAt(0)}
               </div>
               <div className="text-white font-semibold mb-1">{client.name}</div>
@@ -75,12 +96,19 @@ export default function SEOClients() {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-gray-900/50 border border-gray-800">
+          <div
+            className="inline-flex items-center gap-4 px-8 py-4 rounded-full border"
+            style={{
+              background: `linear-gradient(135deg, ${BRAND.primary}08, ${BRAND.dark}05)`,
+              borderColor: `${BRAND.primary}30`
+            }}
+          >
             <div className="flex -space-x-2 space-x-reverse">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 border-2 border-gray-900 flex items-center justify-center text-white text-xs font-bold"
+                  className="w-8 h-8 rounded-full border-2 border-gray-900 flex items-center justify-center text-white text-xs font-bold"
+                  style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
                 >
                   {i}
                 </div>

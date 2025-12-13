@@ -2,6 +2,14 @@
 
 import { motion } from 'framer-motion'
 
+// Brand color: #0485b2
+const BRAND = {
+  primary: '#0485b2',
+  light: '#06a5d9',
+  dark: '#036d94',
+  glow: 'rgba(4, 133, 178, 0.3)',
+}
+
 export default function SEOFooter() {
   return (
     <footer className="relative py-16 bg-black border-t border-gray-900">
@@ -10,7 +18,10 @@ export default function SEOFooter() {
           {/* Logo & Description */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl flex items-center justify-center">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${BRAND.primary}, ${BRAND.light})` }}
+              >
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
@@ -28,7 +39,19 @@ export default function SEOFooter() {
                   key={social}
                   href="#"
                   whileHover={{ scale: 1.1, y: -2 }}
-                  className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 transition-colors"
+                  style={{
+                    ['--hover-color' as string]: BRAND.primary,
+                    ['--hover-bg' as string]: `${BRAND.primary}15`,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = BRAND.primary
+                    e.currentTarget.style.backgroundColor = `${BRAND.primary}15`
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#9ca3af'
+                    e.currentTarget.style.backgroundColor = '#111827'
+                  }}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     {social === 'linkedin' && (
@@ -52,7 +75,13 @@ export default function SEOFooter() {
             <ul className="space-y-3">
               {['קידום אתרי תדמית', 'קידום חנויות אונליין', 'בניית אתרים', 'ייעוץ SEO'].map((link) => (
                 <li key={link}>
-                  <a href="#services" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                  <a
+                    href="#services"
+                    className="text-gray-400 transition-colors"
+                    style={{ ['--hover-color' as string]: BRAND.primary }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = BRAND.primary}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}
+                  >
                     {link}
                   </a>
                 </li>
@@ -65,7 +94,13 @@ export default function SEOFooter() {
             <h4 className="text-white font-bold mb-6">יצירת קשר</h4>
             <ul className="space-y-3">
               <li>
-                <a href="tel:052-566-0563" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                <a
+                  href="tel:052-566-0563"
+                  className="text-gray-400 flex items-center gap-2 transition-colors"
+                  style={{ ['--hover-color' as string]: BRAND.primary }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = BRAND.primary}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}
+                >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
@@ -89,8 +124,24 @@ export default function SEOFooter() {
             © {new Date().getFullYear()} N-C.Digital. כל הזכויות שמורות.
           </div>
           <div className="flex gap-6 text-gray-500 text-sm">
-            <a href="#" className="hover:text-emerald-400 transition-colors">תנאי שימוש</a>
-            <a href="#" className="hover:text-emerald-400 transition-colors">מדיניות פרטיות</a>
+            <a
+              href="#"
+              className="transition-colors"
+              style={{ ['--hover-color' as string]: BRAND.primary }}
+              onMouseEnter={(e) => e.currentTarget.style.color = BRAND.primary}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            >
+              תנאי שימוש
+            </a>
+            <a
+              href="#"
+              className="transition-colors"
+              style={{ ['--hover-color' as string]: BRAND.primary }}
+              onMouseEnter={(e) => e.currentTarget.style.color = BRAND.primary}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            >
+              מדיניות פרטיות
+            </a>
           </div>
         </div>
       </div>
